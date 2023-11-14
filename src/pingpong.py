@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from celery import Celery
-from .constants import *
+from constants import *
 import time
 
-app = Celery('pingpong', broker=broker_url, backend=backend_url)
+app = Celery('pingpong', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task
 def ping():
