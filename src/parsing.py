@@ -6,7 +6,7 @@ import subprocess
 from collections import deque
 
 # Configuration initiale de Celery
-app = Celery('make_distribue', broker='pyamqp://guest@localhost//')
+# app = Celery('parsing', broker='pyamqp://guest@localhost//')
 
 # parsing du makefile
 def parse_makefile(makefile: os.PathLike):

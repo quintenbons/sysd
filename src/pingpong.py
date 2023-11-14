@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 from celery import Celery
+from .constants import *
 import time
 
-broker_url = 'amqp://sysd:dunno@localhost:5672/sysdvhost'
-backend_url = 'rpc://'
 app = Celery('pingpong', broker=broker_url, backend=backend_url)
 
 @app.task
