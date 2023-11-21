@@ -4,6 +4,7 @@ from typing import Set
 import parsing
 import argparse
 import time
+import runner
 
 def get_runnable(done_tasks, task_graph) -> Set[str]:
     runnable = set()
@@ -36,6 +37,8 @@ def main():
         for task in to_run:
             print("RUN", task)
             executing_tasks.add(task)
+            print(tasks[task]['command'])
+            runner.run.delay(task, tasks[task]['command'])
 
 
 if __name__ == "__main__":

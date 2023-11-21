@@ -18,7 +18,7 @@ def parse_makefile(makefile: os.PathLike):
                 if len(split) > 1: target, dependencies = split
                 else: target, dependencies = split[0], ""
                 tasks[target.strip()] = {'dependencies': dependencies.strip().split(), 'command': None}
-            else:
+            elif len(line) != 0 and line[0] in ['\t', ' ']:
                 last_target = list(tasks.keys())[-1]
                 tasks[last_target]['command'] = line.strip()
     return tasks
