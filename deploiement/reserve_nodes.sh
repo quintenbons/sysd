@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Nombre de nœuds à réserver
-NODES=5
+NODES=2
 # Durée de la réservation
 WALLTIME="2:00:00"
 

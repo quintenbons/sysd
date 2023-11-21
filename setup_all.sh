@@ -8,11 +8,11 @@ chmod +x $SCRIPT_PATH/start_workers.sh
 chmod +x $SCRIPT_PATH/cleanup.sh
 
 echo "Réservation des nœuds..."
-$SCRIPT_PATH/reserve_nodes.sh
-if [ $? -ne 0 ]; then
-    echo "Erreur lors de la réservation des nœuds."
-    exit 1
-fi
+# $SCRIPT_PATH/reserve_nodes.sh
+# if [ $? -ne 0 ]; then
+#     echo "Erreur lors de la réservation des nœuds."
+#     exit 1
+# fi
 
 sleep 120
 
