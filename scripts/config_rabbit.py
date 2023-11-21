@@ -40,10 +40,12 @@ def main():
     parser.add_argument("--d-password", help="password", type=str, default="dir_password")
     parser.add_argument("--d-user-tag", help="user tag", type=str, default="dir_tag")
     parser.add_argument("--no-inject", help="do not inject config in src/constants.py", action="store_true")
+    parser.add_argument("--no-config", help="do not config rabbitmd", action="store_true")
     args = parser.parse_args()
 
-    config_rabbit(args.c_vhost, args.c_user, args.c_password, args.c_user_tag)
-    config_rabbit(args.d_vhost, args.d_user, args.d_password, args.d_user_tag)
+    if not args.no_config:
+        config_rabbit(args.c_vhost, args.c_user, args.c_password, args.c_user_tag)
+        config_rabbit(args.d_vhost, args.d_user, args.d_password, args.d_user_tag)
 
     if not args.no_inject:
         inject_config(args.c_vhost, args.c_user, args.c_password, args.c_user_tag, "celery_")
