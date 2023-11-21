@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-from celery import Celery
 import argparse
 import os
 import subprocess
@@ -13,7 +12,8 @@ def parse_makefile(makefile: os.PathLike):
     tasks = {}
     with open(makefile, 'r') as f:
         for line in f.readlines():
-            if line[0] not in ['\t', ' '] and len(line) != 0:
+            line = line.replace('\n', '')
+            if len(line) != 0 and line[0] not in ['\t', ' ']:
                 split = line.split(':')
                 if len(split) > 1: target, dependencies = split
                 else: target, dependencies = split[0], ""
@@ -71,6 +71,7 @@ def main():
     tasks = parse_makefile(args.makefile)
     task_graph = generate_task_graph(tasks)
     ordered_tasks = topological_sort(task_graph)
+    print(ordered_tasks)
     execute_sequentially(tasks, ordered_tasks)
 
 if __name__ == "__main__":
