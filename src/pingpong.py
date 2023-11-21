@@ -7,8 +7,11 @@ import time
 from celery import Celery, Task
 from constants import *
 import directory
+import matplotlib.pyplot as plt
+import math
 
 PORT=12345
+ITERATIONS=1000000
 app = Celery('pingpong', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task(bind=True)
@@ -43,25 +46,32 @@ def ping(server_id: str) -> int:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ipaddr, 12345))
 
-    start = time.time()
-    s.sendall(b'a')
-    data = s.recv(1)
-    stop = time.time()
+    index = 0
+    times = []
+    while(index < ITERATIONS):
+        start = time.time()
+        index += 1
+        s.sendall(b'a')
+        data = s.recv(1)
+        stop = time.time()
+        latency = stop - start
+        times.append(latency)
 
     s.close()
 
     assert data == b'b', "Server did not respond correctly"
-    latency = (stop - start) / 2
-    print(f"CLIENT - Latency: {latency}")
-    return latency
+    print("CLIENT - Server responded correctly")
+    return times
 
 if __name__ == "__main__":
-    start = time.time()
-
     server = pong.delay()
     client = ping.delay(server.id)
-    server.get()
-    latency = client.get()
+    times = client.get()
 
-    print(f"Latency: {latency}")
-    print(f"Round time: {time.time() - start}")
+    print(f"CLIENT - Received {len(times)} pings")
+    with open("pingpong.txt", "w") as f:
+        for t in times:
+            f.write(f"{t}\n")
+    plt.hist([math.log(t, 10) for t in times], bins=100)
+    plt.show()
+    input("Press enter to exit...")
