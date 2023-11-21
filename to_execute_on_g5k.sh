@@ -14,13 +14,16 @@ WALLTIME="2:00:00"
 oarsub -l nodes=$NODES,walltime=$WALLTIME "sleep 3600"
 
 # Attente que la réservation soit active
+echo "Attente de la réservation..."
 while true; do
     STATE=$(oarstat -u | grep "$USER" | awk '{print $5}')
     if [ "$STATE" == "R" ]; then
         echo "Réservation active."
         break
+    else
+        echo "Réservation en attente..."
     fi
-    sleep 60  # Attente de 60 secondes avant de vérifier à nouveau
+    sleep 30  # Attente de 60 secondes avant de vérifier à nouveau
 done
 
 # Récupération des noms d'hôte assignés

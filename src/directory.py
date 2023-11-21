@@ -23,7 +23,7 @@ def send_message(queue: str, message: str) -> None:
         channel.queue_declare(queue=queue, durable=True)
         channel.basic_publish(amqp.Message(message), routing_key=queue)
 
-def get_message(queue: str, timeout: int|None = 30) -> List[amqp.Message]:
+def get_message(queue: str, timeout: Union[int, None] = 30) -> List[amqp.Message]:  # Python 3.9.2 syntax
     """
     Blocks until a message is received on the given queue.
     """
