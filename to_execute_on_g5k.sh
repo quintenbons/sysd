@@ -1,8 +1,6 @@
 #!/bin/bash
 # Configuration de l'environnement
 echo "Configuration de l'environnement"
-git clone https://github.com/quintenbons/sysd.git
-cd sysd
 mkdir -p dist
 
 # Installation des dépendances
