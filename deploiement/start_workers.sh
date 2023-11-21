@@ -8,5 +8,6 @@ WORKER_CMD="export PATH=../:$PATH; celery -A runner worker --loglevel=info"
 
 # Lancer les workers
 for NODE in $NODES; do
-    ssh jubourseau@$NODE "$WORKER_CMD" &
+    echo "Hello I'm node $NODE"
+    # ssh jubourseau@$NODE "$WORKER_CMD" &
 done
