@@ -11,7 +11,7 @@ for NODE in $NODES; do
     echo "pwd: $(pwd)"
     # scp -r ./src jubourseau@$NODE:/ # utiliser var d'env
 
-    ssh jubourseau@$NODE 'pip install "celery[librabbitmq,redis,auth,msgpack]" amqp'
+    # ssh jubourseau@$NODE 'pip install "celery[librabbitmq,redis,auth,msgpack]" amqp'
 
     # autre configs?
 done
