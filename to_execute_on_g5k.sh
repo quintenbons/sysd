@@ -28,7 +28,7 @@ JOB_ID=$(oarstat -u | grep "$USER" | awk '{print $1}')
 NODES=$(oarstat -f -j $JOB_ID | grep "assigned_hostnames" | awk '{print $3}' | tr '+' '\n')
 
 # Commande pour lancer les workers
-WORKER_CMD="export PATH=../:$PATH; celery -A runner worker --loglevel=info"
+WORKER_CMD="export PYTHONPATH=../src:$PYTHONPATH;export PATH=../:$PATH; cd /home/$USER/sysd/dist &&  python -m celery -A runner worker --loglevel=info"
 
 # Lancer les workers
 for NODE in $NODES; do
