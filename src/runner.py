@@ -18,6 +18,8 @@ def run(self: Task, taskname: str, task_cmd: str) -> bool:
     # TODO (for now it's just synced)
 
     # Run task
-    subprocess.run(task_cmd)
+    newmsg = f"Running task {taskname} with command {task_cmd}"
+    print(newmsg)
+    subprocess.run(task_cmd, shell=True)
 
     return True

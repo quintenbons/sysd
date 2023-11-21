@@ -26,20 +26,28 @@ def main():
 
     done_tasks = set()
     executing_tasks = set()
+    running = set()
     while len(done_tasks) < len(tasks):
         runnable = get_runnable(done_tasks, task_graph)
         to_run = runnable - executing_tasks
 
+        for job_handle in list(running):
+            task, job = job_handle
+            if job.ready():
+                print("JOB DONE", job, "FOR TASK", task)
+                running.remove(job_handle)
+                done_tasks.add(task)
+                executing_tasks.remove(task)
+
         if len(to_run) == 0:
             print("All running, waiting for news")
-            time.sleep(10)
+            time.sleep(1)
 
         for task in to_run:
-            print("RUN", task)
+            print(f"RUN {task} with command {tasks[task]['command']}")
             executing_tasks.add(task)
-            print(tasks[task]['command'])
-            runner.run.delay(task, tasks[task]['command'])
-
+            celery_instance = runner.run.delay(task, tasks[task]['command'])
+            running.add((task, celery_instance))
 
 if __name__ == "__main__":
     main()
