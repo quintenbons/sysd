@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 import math
 
 PORT=12345
-ITERATIONS=1000000
+ITERATIONS=25
+BUNDLE_SIZE=1000
 app = Celery('pingpong', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task(bind=True)
@@ -28,11 +29,14 @@ def pong(self: Task):
     conn, addr = s.accept()
 
     print(f"SERVER - Connected by {addr}. Waiting for pings...")
+    index = 0
     while True:
-        data = conn.recv(1)
-        if len(data) == 0:
-            break
-        conn.send(b'b')
+        for _ in range(BUNDLE_SIZE):
+            data = conn.recv(2 ** index)
+            if len(data) == 0:
+                break
+            conn.send(b'b')
+        index += 1
 
     conn.close()
 
@@ -48,14 +52,20 @@ def ping(server_id: str) -> int:
 
     index = 0
     times = []
+    load_factor=0
     while(index < ITERATIONS):
-        start = time.time()
-        index += 1
-        s.sendall(b'a')
-        data = s.recv(1)
-        stop = time.time()
-        latency = stop - start
-        times.append(latency)
+        print(f"CLIENT - Sending ping {index+1}/{ITERATIONS}")
+        times.append(0)
+        for _ in range(BUNDLE_SIZE):
+            start = time.time()
+            bytes_sent = 2 ** index
+            s.sendall(b'a' * bytes_sent)
+            data = s.recv(1)
+            stop = time.time()
+            latency = stop - start
+            times[-1] += latency
+        times[-1] /= BUNDLE_SIZE
+        index += 1 
 
     s.close()
 
@@ -69,9 +79,9 @@ if __name__ == "__main__":
     times = client.get()
 
     print(f"CLIENT - Received {len(times)} pings")
-    with open("pingpong.txt", "w") as f:
+    with open("pingpong_loadtest.txt", "w") as f:
         for t in times:
             f.write(f"{t}\n")
-    plt.hist([math.log(t, 10) for t in times], bins=100)
+    plt.plot([math.log(t, 10) for t in times])
     plt.show()
     input("Press enter to exit...")
