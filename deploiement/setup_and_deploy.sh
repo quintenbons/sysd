@@ -3,8 +3,8 @@
 SOURCE_CODE_PATH="../src"
 
 JOB_ID="2313550"
+NODES=$(oarstat -f -j $JOB_ID | grep "assigned_hostnames" | awk '{print $3}' | tr '+' '\n')
 
-NODES=$(oarstat -f -j $JOB_ID | grep "assigned_hostnames" | cut -d ' ' -f 3)
 
 for NODE in $NODES; do
     echo "Configuration du nœud $NODE"
