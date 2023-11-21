@@ -2,3 +2,4 @@ example/**
 dist/**
 build/**
 __pycache__
+.env
