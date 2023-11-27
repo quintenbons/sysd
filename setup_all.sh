@@ -18,14 +18,17 @@ ssh -t grenoble.g5k << 'ENDSSH'
     # Vérification de l'existence du répertoire sysd
     if [ ! -d "sysd" ]; then
         git clone https://github.com/quintenbons/sysd.git
-    else
-        echo "Le répertoire 'sysd' existe déjà, mise à jour du dépôt..."
-        cd sysd
-        git pull
-        cd
     fi
 
+    # Creation forcée d'une branche locale
+    echo "Mise à jour du dépôt sysd"
     cd sysd
-    git checkout deploiement
-    ./deploiement/to_execute_on_g5k.sh
+    git fetch
+    git reset --hard origin/deploiement
+    git clean -fd
+    git branch -D g5k-local-branch
+    git checkout -b g5k-local-branch origin/deploiement
+    cd ..
+
+    ./sysd/deploiement/to_execute_on_g5k.sh
 ENDSSH
