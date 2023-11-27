@@ -24,7 +24,7 @@ ssh -t grenoble.g5k << 'ENDSSH'
     echo "Mise à jour du dépôt sysd"
     cd sysd
     git fetch
-    git reset --hard origin/deploiement
+    git reset --hard origin/main
     git clean -fd
     git branch -D g5k-local-branch
     git checkout -b g5k-local-branch origin/deploiement
