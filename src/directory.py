@@ -2,7 +2,7 @@
 """
 Abstract communication interface with the directory
 """
-from typing import List
+from typing import List, Union
 import amqp
 from constants import *
 
