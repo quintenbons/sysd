@@ -11,31 +11,49 @@ pip install "celery[librabbitmq,redis,auth,msgpack]" amqp
 echo "Réservation des nœuds"
 NODES=2
 WALLTIME="2:00:00"
-oarsub -l nodes=$NODES,walltime=$WALLTIME "sleep 3600"
+JSON_RESULT=$(oarsub -l nodes=$NODES,walltime=$WALLTIME -J "sleep infinity")
+JOB_ID=$(echo $JSON_RESULT | jq -r '.job_id')
 
 # Attente que la réservation soit active
-echo "Attente de la réservation..."
+echo "Job en cours de réservation JOB_ID: $JOB_ID..."
 while true; do
-    STATE=$(oarstat -u | grep "$USER" | awk '{print $5}')
-    if [ "$STATE" == "R" ]; then
+    STATE=$(oarstat -s -J -j $JOB_ID | jq -r '."'"$JOB_ID"'"')
+    if [ "$STATE" == "Running" ]; then
         echo "Réservation active."
         break
     else
-        echo "Réservation en attente..."
+        echo "Réservation en attente... (État: $STATE)"
     fi
-    sleep 30  # Attente de 60 secondes avant de vérifier à nouveau
+    sleep 5 # Ease
 done
 
 # Récupération des noms d'hôte assignés
-JOB_ID=$(oarstat -u | grep "$USER" | awk '{print $1}')
-NODES=$(oarstat -f -j $JOB_ID | grep "assigned_hostnames" | awk '{print $3}' | tr '+' '\n')
+NODES=$(oarstat -j $JOB_ID -p | oarprint host -f -)
+MASTER_NODE=$(echo $NODES | awk '{print $1}') # 1rst
+WORKER_NODES=$(echo $NODES | cut -d' ' -f2-) # all but 1rst
 
-# Commande pour lancer les workers
-WORKER_CMD="export PYTHONPATH=../src:$PYTHONPATH;export PATH=../:$PATH; cd /home/$USER/sysd/dist &&  python -m celery -A runner worker --loglevel=info"
+REPO_PATH=$HOME/sysd
+MASTER_CMD="source $REPO_PATH/deploiement/start_master.sh"
+WORKER_CMD="source $REPO_PATH/deploiement/start_worker.sh"
+
+function announce() {
+    echo "JOB_ID: $JOB_ID"
+    echo "MASTER_NODE: $MASTER_NODE"
+    echo "WORKER_NODES: $WORKER_NODES"
+}
+
+if [ "$1" == "PREMATURE_STOP" ]; then
+    echo "Stopping before deployment as asked by parameter 1: $1."
+    announce
+    exit 0
+fi
+
+ssh $USER@$MASTER_NODE "$MASTER_CMD" &
 
 # Lancer les workers
-for NODE in $NODES; do
+for NODE in $WORKER_NODES; do
     ssh $USER@$NODE "$WORKER_CMD" &
 done
 
 echo "Déploiement terminé."
+announce
