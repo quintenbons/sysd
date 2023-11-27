@@ -17,4 +17,7 @@ echo
 echo "RabbitMQ service status:"
 sudo systemctl status rabbitmq-server
 
+echo "Compiling premier for current architechture..."
+g++ $REPO_PATH/example/premier/premier.c -o $REPO_PATH/bin/premier
+
 python $REPO_PATH/scripts/config_rabbit.py
