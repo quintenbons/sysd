@@ -10,13 +10,19 @@
 
 ## Quick start g5k
 
-- Deploy everything with `./setup_all.sh [G5K_USER]`
+1. Deploy everything with `./setup_all.sh [G5K_USER]`
+2. Connect to grenoble.g5k `ssh grenoble.g5k`
+3. Use the parralel makefile: `cd ~/sysd/dist && python ~/sysd/src/manager.py [/path/to/Makefile]`
 
-This will deploy some workers for some time (specifics are in `deploiement/setenv.sh`). Local ssh configuration is also changed, so you won't need your password anymore.
+### More details:
+
+`setup_all.sh` will launch some workers for some time (specifics are in `deploiement/setenv.sh`). Local ssh configuration is also changed, so you won't need your password anymore.
 
 To check the current deployment, check out the info.json file:
 
 `ssh grenoble.g5k "cat ~/g5k_deploy/info.json"`
+
+Note that currently, NFS is used to sync files, so you will find all artifacts in `~/sysd/dist`
 
 ## RabbitMQ Broker
 
