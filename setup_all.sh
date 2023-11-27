@@ -27,6 +27,5 @@ ssh -t grenoble.g5k << 'ENDSSH'
 
     cd sysd
     git checkout deploiement
-    chmod +x to_execute_on_g5k.sh
-    ./to_execute_on_g5k.sh
+    ./deploiement/to_execute_on_g5k.sh
 ENDSSH

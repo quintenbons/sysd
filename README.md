@@ -8,6 +8,10 @@
 4. Launch a Celery worker on your chosen module (eg. for pinpong, within src/, launch `PYTHONPATH=.:$PYTHONPATH celery -A pingpong worker --loglevel=info`)
 5. Go wild (launch `src/pingpong.py` to launch a simple ping pong)
 
+## Quick start g5k
+
+- Deploy everything with `./setup_all.sh [G5K_USER]`
+
 ## RabbitMQ Broker
 
 Two vhosts are needed, one for celery (tasks), one for the directory, which is needed for general communication between workers.
