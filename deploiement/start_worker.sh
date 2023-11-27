@@ -1,3 +1,4 @@
+#!/bin/bash
 REPO_PATH=$HOME/sysd
 source $REPO_PATH/deploiement/setenv.sh
 

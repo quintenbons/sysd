@@ -48,7 +48,8 @@ if [ "$1" == "PREMATURE_STOP" ]; then
     exit 0
 fi
 
-ssh $USER@$MASTER_NODE "$MASTER_CMD" &
+# Must be synchronous
+ssh $USER@$MASTER_NODE "$MASTER_CMD"
 
 # Lancer les workers
 for NODE in $WORKER_NODES; do
