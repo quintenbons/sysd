@@ -49,12 +49,22 @@ if [ "$1" == "PREMATURE_STOP" ]; then
 fi
 
 # Must be synchronous
+echo "Lancement du noeud maître"
+BROKER_HOST=$MASTER_NODE
+BROKER_PORT=5672
+sed -i "s/^broker_host = .*$/broker_host = \"$BROKER_HOST\"/" $REPO_PATH/src/constants.py
+sed -i "s/^broker_port = .*$/broker_port = $BROKER_PORT/" $REPO_PATH/src/constants.py
+
 ssh $USER@$MASTER_NODE "$MASTER_CMD"
+
+sleep 1
 
 # Lancer les workers
 for NODE in $WORKER_NODES; do
     ssh $USER@$NODE "$WORKER_CMD" &
 done
+
+sleep 1
 
 echo "Déploiement terminé."
 announce
