@@ -12,6 +12,12 @@
 
 - Deploy everything with `./setup_all.sh [G5K_USER]`
 
+This will deploy some workers for some time (specifics are in `deploiement/setenv.sh`). Local ssh configuration is also changed, so you won't need your password anymore.
+
+To check the current deployment, check out the info.json file:
+
+`ssh grenoble.g5k "cat ~/g5k_deploy/info.json"`
+
 ## RabbitMQ Broker
 
 Two vhosts are needed, one for celery (tasks), one for the directory, which is needed for general communication between workers.

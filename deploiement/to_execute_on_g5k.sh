@@ -1,4 +1,7 @@
 #!/bin/bash
+REPO_PATH=$HOME/sysd
+source $REPO_PATH/deploiement/setenv.sh
+
 # Configuration de l'environnement
 echo "Configuration de l'environnement"
 mkdir -p dist
@@ -9,8 +12,6 @@ pip install "celery[librabbitmq,redis,auth,msgpack]" amqp
 
 # Réservation des nœuds
 echo "Réservation des nœuds"
-NODES=2
-WALLTIME="2:00:00"
 JSON_RESULT=$(oarsub -l nodes=$NODES,walltime=$WALLTIME -J "sleep infinity")
 JOB_ID=$(echo $JSON_RESULT | jq -r '.job_id')
 
@@ -27,39 +28,36 @@ while true; do
     sleep 5 # Ease
 done
 
-# Récupération des noms d'hôte assignés
+# Mise en place de l'environnement
 NODES=$(oarstat -j $JOB_ID -p | oarprint host -f -)
 MASTER_NODE=$(echo $NODES | awk '{print $1}') # 1rst
 WORKER_NODES=$(echo $NODES | cut -d' ' -f2-) # all but 1rst
 
-REPO_PATH=$HOME/sysd
-MASTER_CMD="source $REPO_PATH/deploiement/start_master.sh"
-WORKER_CMD="source $REPO_PATH/deploiement/start_worker.sh"
+# Informations de déploiement
+mkdir $DEPLOY_INFO_PATH # See setenv.sh
+WORKER_NODES_ARRAY=$(echo $WORKER_NODES | jq -R 'split(" ")')
 
-function announce() {
-    echo "JOB_ID: $JOB_ID"
-    echo "MASTER_NODE: $MASTER_NODE"
-    echo "WORKER_NODES: $WORKER_NODES"
-}
+jq -n \
+    --arg masterNode "$MASTER_NODE" \
+    --argjson workerNodes "$WORKER_NODES_ARRAY" \
+    '{masterNode: $masterNode, workerNodes: $workerNodes}' \
+    > "${DEPLOY_INFO_PATH}/info.json"
 
-if [ "$1" == "PREMATURE_STOP" ]; then
-    echo "Stopping before deployment as asked by parameter 1: $1."
-    announce
-    exit 0
-fi
-
-# Must be synchronous
-echo "Lancement du noeud maître"
 BROKER_HOST=$MASTER_NODE
 BROKER_PORT=5672
 sed -i "s/^broker_host = .*$/broker_host = \"$BROKER_HOST\"/" $REPO_PATH/src/constants.py
 sed -i "s/^broker_port = .*$/broker_port = $BROKER_PORT/" $REPO_PATH/src/constants.py
 
+# Lancer le master
+echo "Lancement du noeud maître"
+MASTER_CMD="source $REPO_PATH/deploiement/start_master.sh"
 ssh $USER@$MASTER_NODE "$MASTER_CMD"
 
 sleep 1
 
 # Lancer les workers
+echo "Lancement des noeuds esclaves"
+WORKER_CMD="source $REPO_PATH/deploiement/start_worker.sh"
 for NODE in $WORKER_NODES; do
     ssh $USER@$NODE "$WORKER_CMD" &
 done
@@ -67,4 +65,6 @@ done
 sleep 1
 
 echo "Déploiement terminé."
-announce
+echo "JOB_ID: $JOB_ID"
+echo "MASTER_NODE: $MASTER_NODE"
+echo "WORKER_NODES: $WORKER_NODES"
