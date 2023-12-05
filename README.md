@@ -13,6 +13,7 @@
 1. Deploy everything with `./setup_all.sh [G5K_USER]`
 2. Connect to grenoble.g5k `ssh grenoble.g5k`
 3. Use the parralel makefile: `cd ~/sysd/dist && python ~/sysd/src/manager.py [/path/to/Makefile]`
+4. Destroy with `ssh grenobel.g5k "~/sysd/deploiement/hard_cleanup.sh"`
 
 ### More details:
 
