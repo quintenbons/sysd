@@ -16,7 +16,7 @@ if grep -q "^Host g5k$" "$SSH_CONFIG"; then
 fi
 
 check_and_append() {
-    echo "$1" >> "$2"
+    echo -e "$1" >> "$2"
 }
 
 if [ ! -f "$SSH_CONFIG" ]; then
