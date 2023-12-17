@@ -48,7 +48,7 @@ echo "=== Configuring RabbitMQ server"
 python $REPO_PATH/scripts/config_rabbit.py
 
 # Launch flask
-nohup python $HOME/sysd/flask_server.py > $HOME/sysd/logs/flask.log 2>&1 &
+nohup python $REPO_PATH/src/flask_server.py > $DEPLOY_INFO_PATH/flask.log 2>&1 &
 
 # Compiling binaries for example makefiles
 echo "Compiling premier for current architechture..."

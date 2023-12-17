@@ -4,7 +4,14 @@ source $REPO_PATH/deploiement/setenv.sh
 
 # Configuration de l'environnement
 echo "Configuration de l'environnement"
-mkdir -p dist
+mkdir -p $REPO_PATH/dist
+
+# DEPLOY_INFO_PATH
+if [ -d "$DEPLOY_INFO_PATH" ]; then
+    echo "Suppression de $DEPLOY_INFO_PATH"
+    rm -rf $DEPLOY_INFO_PATH
+fi
+mkdir -p $DEPLOY_INFO_PATH
 
 # Installation des dépendances
 echo "Installation de Celery et autres dépendances"
@@ -34,7 +41,6 @@ MASTER_NODE=$(echo $NODES | awk '{print $1}') # 1rst
 WORKER_NODES=$(echo $NODES | cut -d' ' -f2-) # all but 1rst
 
 # Informations de déploiement
-mkdir $DEPLOY_INFO_PATH # See setenv.sh
 WORKER_NODES_ARRAY=$(echo $WORKER_NODES | jq -R 'split(" ")')
 
 jq -n \
