@@ -21,7 +21,7 @@ function install_rabbit_g5k {
   cd ~/Install-tmp
 
   echo "Installing Erlang"
-  if [ ! command -v erl &> /dev/null ]; then
+  if ! command -v erl &> /dev/null; then
     echo "Erlang not found"
     install_erlang
   else
