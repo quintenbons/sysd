@@ -1,10 +1,23 @@
 #!/usr/bin/python3
 """Main manager: dependency tree and launching tasks"""
+import os
 from typing import Set
 import parsing
 import argparse
 import time
 import runner
+import json
+from flask_wrapper import APIWrapper
+
+def get_master_node_ip():
+    with open('~/g5k_deploy/info.json', 'r') as file:
+        data = json.load(file)
+        return data['masterNode']
+
+def nfs_pull_artifacts(directory: os.PathLike):
+    master_ip = get_master_node_ip()
+    flask_wrapper = APIWrapper(f"http://{master_ip}:5000")
+    return flask_wrapper.sync_nfs(directory)
 
 def get_runnable(done_tasks, task_graph) -> Set[str]:
     runnable = set()
@@ -50,6 +63,10 @@ def main():
             dependencies = list(task_graph[task])
             celery_instance = runner.run.delay(task, cmd, dependencies)
             running.add((task, celery_instance))
+
+    print("All tasks done! Pulling artifacts... With nfs to ~/make_dist")
+    if not nfs_pull_artifacts("~/make_dist"):
+        print("Failed to pull artifacts")
 
 if __name__ == "__main__":
     main()

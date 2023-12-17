@@ -8,24 +8,33 @@ class APIWrapper:
         self.base_url = base_url
 
     def get_file(self, filename):
-      url = f"{self.base_url}/files/{filename}"
-      response = requests.get(url)
-      if response.status_code == 200:
-        with open(filename, 'wb') as file:
-          file.write(response.content)
-        return True
-      else:
-        return False
+        url = f"{self.base_url}/files/{filename}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(filename, 'wb') as file:
+                file.write(response.content)
+            return True
+        else:
+            return False
 
     def upload_file(self, file):
-      url = f"{self.base_url}/files"
-      files = {'file': file}
-      response = requests.post(url, files=files)
-      if response.status_code == 200:
-        return True
-      else:
-        return False
+        url = f"{self.base_url}/files"
+        files = {'file': file}
+        response = requests.post(url, files=files)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
 
+    def sync_nfs(self, dest_path):
+        url = f"{self.base_url}/sync_nfs"
+        response = requests.post(url, data=dest_path)
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+
+# Simple test
 if __name__ == '__main__':
     target = "http://localhost:5000"
     if len(sys.argv) >= 2:
@@ -49,3 +58,5 @@ if __name__ == '__main__':
 
     with open('temp.txt', 'r') as file:
         print(file.read())
+
+    os.remove('temp.txt')
