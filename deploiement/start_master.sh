@@ -1,30 +1,59 @@
 #!/bin/bash
 REPO_PATH=$HOME/sysd
 source $REPO_PATH/deploiement/setenv.sh
+source $REPO_PATH/deploiement/rabbitmq_install.sh
 
 # Launch the master
 
 # Install rabbit
-sudo-g5k
-$REPO_PATH/scripts/install_rabbit_g5k.sh
+if ! command -v rabbitmq-server &> /dev/null
+then
+  install_rabbit_g5k
+else
+  echo "=== RabbitMQ is already installed"
+fi
 
-# Enable and start the RabbitMQ service
-sudo systemctl enable rabbitmq-server
-sudo systemctl start rabbitmq-server
+# If rabbit is running, stop it
+if rabbitmqctl status > /dev/null 2>&1; then
+    echo "=== Stopping existing RabbitMQ server"
+    rabbitmqctl stop
+    if [ $? -ne 0 ]; then
+        echo "Failed to stop RabbitMQ server"
+        exit 1
+    else
+        echo "RabbitMQ server stopped"
+    fi
+fi
 
-# Display status
-echo
-echo "RabbitMQ service status:"
-sudo systemctl status rabbitmq-server
+# Start rabbit
+echo "=== Starting RabbitMQ server"
+rabbitmq-server -detached
 
-# Launch Flask server
+# Wait for server to start
+echo "=== Waiting for RabbitMQ server to start..."
+for i in {1..20}; do
+    if rabbitmqctl status > /dev/null 2>&1; then
+        break
+    fi
+    sleep 1
+done
+
+if ! rabbitmqctl status; then
+    echo "=== RabbitMQ server failed to start"
+    exit 1
+fi
+
+# Configure rabbit
+echo "=== Configuring RabbitMQ server"
+python $REPO_PATH/scripts/config_rabbit.py
+
+# Launch flask
 nohup python $HOME/sysd/flask_server.py > $HOME/sysd/logs/flask.log 2>&1 &
 
+# Compiling binaries for example makefiles
 echo "Compiling premier for current architechture..."
 g++ $REPO_PATH/example/premier/premier.c -o $REPO_PATH/bin/premier
 
 echo "Linking sum and multiply..."
 ln -s $REPO_PATH/example/matrix/sum $REPO_PATH/bin/sum
 ln -s $REPO_PATH/example/matrix/multiply $REPO_PATH/bin/multiply
-
-python $REPO_PATH/scripts/config_rabbit.py

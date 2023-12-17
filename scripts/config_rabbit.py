@@ -9,10 +9,16 @@ import os
 import re
 
 def config_rabbit(vhost, user, password, user_tag):
-    subprocess.run(f"sudo rabbitmqctl add_vhost {vhost}", shell=True)
-    subprocess.run(f"sudo rabbitmqctl add_user {user} {password}", shell=True)
-    subprocess.run(f"sudo rabbitmqctl set_user_tags {user} {user_tag}", shell=True)
-    subprocess.run(f"sudo rabbitmqctl set_permissions -p {vhost} {user} \".*\" \".*\" \".*\"", shell=True)
+    print(f"Configuring RabbitMQ for vhost {vhost} and user {user}")
+    print(f"Running commands:")
+    print(f"rabbitmqctl add_vhost {vhost}")
+    subprocess.run(f"rabbitmqctl add_vhost {vhost}", shell=True)
+    print(f"rabbitmqctl add_user {user} {password}")
+    subprocess.run(f"rabbitmqctl add_user {user} {password}", shell=True)
+    print(f"rabbitmqctl set_user_tags {user} {user_tag}")
+    subprocess.run(f"rabbitmqctl set_user_tags {user} {user_tag}", shell=True)
+    print(f"rabbitmqctl set_permissions -p {vhost} {user} \".*\" \".*\" \".*\"")
+    subprocess.run(f"rabbitmqctl set_permissions -p {vhost} {user} \".*\" \".*\" \".*\"", shell=True)
 
 def inject_config(vhost, user, password, user_tag, prefix=""):
     root = os.path.join(os.path.dirname(__file__), "..")
