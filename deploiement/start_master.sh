@@ -17,6 +17,9 @@ echo
 echo "RabbitMQ service status:"
 sudo systemctl status rabbitmq-server
 
+# Launch Flask server
+nohup python $HOME/sysd/flask_server.py > $HOME/sysd/logs/flask.log 2>&1 &
+
 echo "Compiling premier for current architechture..."
 g++ $REPO_PATH/example/premier/premier.c -o $REPO_PATH/bin/premier
 

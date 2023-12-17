@@ -8,7 +8,7 @@ mkdir -p dist
 
 # Installation des dépendances
 echo "Installation de Celery et autres dépendances"
-pip install "celery[librabbitmq,redis,auth,msgpack]" amqp
+pip install "celery[librabbitmq,redis,auth,msgpack]" amqp flask
 
 # Réservation des nœuds
 echo "Réservation des nœuds"
