@@ -46,7 +46,9 @@ def main():
         for task in to_run:
             print(f"RUN {task} with command {tasks[task]['command']}")
             executing_tasks.add(task)
-            celery_instance = runner.run.delay(task, tasks[task]['command'])
+            cmd = tasks[task]['command']
+            dependencies = task_graph[task]
+            celery_instance = runner.run.delay(task, cmd, dependencies)
             running.add((task, celery_instance))
 
 if __name__ == "__main__":
