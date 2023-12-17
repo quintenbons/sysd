@@ -1,12 +1,14 @@
 #!/bin/bash
 if [ $# -lt 1 ]; then
-    echo "Usage: $0 <user> <site> <git-branch>"
+    echo "Usage: $0 user [site] [git-branch] [nfs/server]"
+    echo "Only user is mandatory"
     exit 1
 fi
 
 G5K_USER=$1
 G5K_SITE=${2:-grenoble}
 G5K_BRANCH=${3:-main}
+G5K_FILESYNC=${4:-nfs}
 echo "user: $G5K_USER@access.grid5000.fr"
 
 # Configuration locale (~/.ssh/config)
@@ -32,5 +34,6 @@ ssh -t "$G5K_SITE.g5k" << ENDSSH
     git checkout -b g5k-local-branch "origin/$G5K_BRANCH"
     cd ..
 
+    export FILESYNC_TYPE=$G5K_FILESYNC
     ./sysd/deploiement/to_execute_on_g5k.sh
 ENDSSH

@@ -10,14 +10,9 @@ import re
 
 def config_rabbit(vhost, user, password, user_tag):
     print(f"Configuring RabbitMQ for vhost {vhost} and user {user}")
-    print(f"Running commands:")
-    print(f"rabbitmqctl add_vhost {vhost}")
     subprocess.run(f"rabbitmqctl add_vhost {vhost}", shell=True)
-    print(f"rabbitmqctl add_user {user} {password}")
     subprocess.run(f"rabbitmqctl add_user {user} {password}", shell=True)
-    print(f"rabbitmqctl set_user_tags {user} {user_tag}")
     subprocess.run(f"rabbitmqctl set_user_tags {user} {user_tag}", shell=True)
-    print(f"rabbitmqctl set_permissions -p {vhost} {user} \".*\" \".*\" \".*\"")
     subprocess.run(f"rabbitmqctl set_permissions -p {vhost} {user} \".*\" \".*\" \".*\"", shell=True)
 
 def inject_config(vhost, user, password, user_tag, prefix=""):

@@ -48,6 +48,8 @@ echo "=== Configuring RabbitMQ server"
 python $REPO_PATH/scripts/config_rabbit.py
 
 # Launch flask
+mkdir -p /tmp/dist
+cd /tmp/dist
 nohup python $REPO_PATH/src/flask_server.py > $DEPLOY_INFO_PATH/flask.log 2>&1 &
 
 # Compiling binaries for example makefiles
