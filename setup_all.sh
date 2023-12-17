@@ -1,10 +1,12 @@
 #!/bin/bash
-if [ -z "$1" ]; then
-    echo "Usage: ./setup_all.sh <g5k-user>"
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <user> <site> <git-branch>"
     exit 1
 fi
 
 G5K_USER=$1
+G5K_SITE=${2:-grenoble}
+G5K_BRANCH=${3:-main}
 echo "user: $G5K_USER@access.grid5000.fr"
 
 # Configuration locale (~/.ssh/config)
@@ -12,7 +14,7 @@ echo "user: $G5K_USER@access.grid5000.fr"
 ./deploiement/configure_ssh.sh $G5K_USER
 
 # Connexion à Grid5000 et configuration
-ssh -t grenoble.g5k << 'ENDSSH'
+ssh -t "$G5K_SITE.g5k" << ENDSSH
     echo "Configuration de l'environnement sur le serveur Grenoble"
 
     # Vérification de l'existence du répertoire sysd
@@ -24,10 +26,10 @@ ssh -t grenoble.g5k << 'ENDSSH'
     echo "Mise à jour du dépôt sysd"
     cd sysd
     git fetch
-    git reset --hard origin/main
+    git reset --hard "origin/$G5K_BRANCH"
     git clean -fd
     git branch -D g5k-local-branch
-    git checkout -b g5k-local-branch origin/deploiement
+    git checkout -b g5k-local-branch "origin/$G5K_BRANCH"
     cd ..
 
     ./sysd/deploiement/to_execute_on_g5k.sh
