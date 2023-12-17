@@ -62,13 +62,15 @@ ssh $USER@$MASTER_NODE "$MASTER_CMD"
 sleep 1
 
 # Lancer les workers
+FILESYNC_TYPE=${FILESYNC_TYPE:-nfs}
+FILE_SERVER=${FILE_SERVER:-$MASTER_NODE}
 echo "Lancement des noeuds esclaves"
 WORKER_CMD="source $REPO_PATH/deploiement/start_worker.sh"
 for NODE in $WORKER_NODES; do
-    ssh $USER@$NODE "$WORKER_CMD" &
+    ssh $USER@$NODE "FILESYNC_TYPE=$FILESYNC_TYPE FILE_SERVER=$FILE_SERVER $WORKER_CMD" &
 done
 
-sleep 1
+wait
 
 echo "Déploiement terminé."
 echo "JOB_ID: $JOB_ID"

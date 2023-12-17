@@ -17,6 +17,9 @@ app = Celery('runner', broker=celery_broker_url, backend=celery_backend_url)
 filesync_type = os.environ.get('FILESYNC_TYPE', 'nfs')
 file_server = os.environ.get('FILE_SERVER', 'http://localhost:5000')
 
+print("FILESYNC_TYPE:", filesync_type)
+print("FILE_SERVER:", file_server)
+
 file_wrapper = APIWrapper(file_server)
 
 def sync_dependencies(dependencies: List[str]) -> None:
