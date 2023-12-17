@@ -47,7 +47,7 @@ def main():
             print(f"RUN {task} with command {tasks[task]['command']}")
             executing_tasks.add(task)
             cmd = tasks[task]['command']
-            dependencies = task_graph[task]
+            dependencies = list(task_graph[task])
             celery_instance = runner.run.delay(task, cmd, dependencies)
             running.add((task, celery_instance))
 
