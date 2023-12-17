@@ -17,7 +17,7 @@ def upload_file():
 @app.route('/sync_nfs', methods=['POST'])
 def sync_nfs():
     dest_path = request.data.decode('utf-8')
-    os.system(f"rsync -a {dest_path} .")
+    os.system(f"rsync -a . {dest_path}")
     return 'NFS synced successfully'
 
 if __name__ == '__main__':

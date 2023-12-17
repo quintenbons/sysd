@@ -10,7 +10,7 @@ import json
 from flask_wrapper import APIWrapper
 
 def get_master_node_ip():
-    with open('~/g5k_deploy/info.json', 'r') as file:
+    with open(os.path.expanduser('~/g5k_deploy/info.json'), 'r') as file:
         data = json.load(file)
         return data['masterNode']
 
@@ -64,8 +64,9 @@ def main():
             celery_instance = runner.run.delay(task, cmd, dependencies)
             running.add((task, celery_instance))
 
-    print("All tasks done! Pulling artifacts... With nfs to ~/make_dist")
-    if not nfs_pull_artifacts("~/make_dist"):
+    dest_path = os.path.expanduser('~/make_dist')
+    print(f"All tasks done! Pulling artifacts... With nfs to {dest_path}")
+    if not nfs_pull_artifacts(dest_path):
         print("Failed to pull artifacts")
 
 if __name__ == "__main__":
