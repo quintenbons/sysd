@@ -12,7 +12,7 @@
 
 1. Deploy everything with `./setup_all.sh [G5K_USER]`
 2. Connect to grenoble.g5k `ssh grenoble.g5k`
-3. Use the parralel makefile: `cd ~/sysd/dist && python ~/sysd/src/make.py [/path/to/Makefile]`
+3. Use the parralel makefile: `python ~/sysd/src/make.py [/path/to/Makefile]`. Artifacts will be in `~/make_dist`. They are transfered with nfs, but you can also deactivate this with `--no-nfs`, and pull them from the master node (a flask file server is launched on port 5000).
 4. Destroy with `ssh grenobel.g5k "~/sysd/deploiement/hard_cleanup.sh"`
 
 ### More details:

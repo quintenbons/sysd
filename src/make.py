@@ -32,6 +32,7 @@ def get_runnable(done_tasks, task_graph) -> Set[str]:
 def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('makefile', help='Makefile to parse')
+    argparser.add_argument('--no-nfs', help='Do not pull artifacts from nfs', action='store_true')
 
     args = argparser.parse_args()
     tasks = parsing.parse_makefile(args.makefile)
@@ -64,10 +65,11 @@ def main():
             celery_instance = runner.run.delay(task, cmd, dependencies)
             running.add((task, celery_instance))
 
-    dest_path = os.path.expanduser('~/make_dist')
-    print(f"All tasks done! Pulling artifacts... With nfs to {dest_path}")
-    if not nfs_pull_artifacts(dest_path):
-        print("Failed to pull artifacts")
+    if args.no_nfs:
+        dest_path = os.path.expanduser('~/make_dist')
+        print(f"All tasks done! Pulling artifacts... With nfs to {dest_path}")
+        if not nfs_pull_artifacts(dest_path):
+            print("Failed to pull artifacts")
 
 if __name__ == "__main__":
     main()
