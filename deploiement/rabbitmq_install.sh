@@ -26,7 +26,6 @@ function install_rabbit_g5k {
     install_erlang
   else
     echo "Erlang already installed"
-    return
   fi
 
   echo "Installing RabbitMQ"
