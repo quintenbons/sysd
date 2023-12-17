@@ -10,15 +10,15 @@ from constants import *
 import subprocess
 from flask_wrapper import APIWrapper
 
-print(f"broker url: {celery_broker_url}")
-print(f"backend url: {celery_backend_url}")
 app = Celery('runner', broker=celery_broker_url, backend=celery_backend_url)
 
 filesync_type = os.environ.get('FILESYNC_TYPE', 'nfs')
 file_server = os.environ.get('FILE_SERVER', 'http://localhost:5000')
 
-print("FILESYNC_TYPE:", filesync_type)
-print("FILE_SERVER:", file_server)
+print(f"[MODULE CONFIG] broker url: {celery_broker_url}")
+print(f"[MODULE CONFIG] backend url: {celery_backend_url}")
+print(f"[MODULE CONFIG] filesync type: {filesync_type}")
+print(f"[MODULE CONFIG] file server: {file_server}")
 
 file_wrapper = APIWrapper(file_server)
 
