@@ -99,7 +99,7 @@ def main():
 
     performance.all_jobs_done_time = time.time()
 
-    if args.no_nfs:
+    if not args.no_nfs:
         dest_path = os.path.expanduser('~/make_dist')
         print(f"All tasks done! Pulling artifacts... With nfs to {dest_path}")
         if not nfs_pull_artifacts(dest_path):
