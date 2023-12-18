@@ -12,7 +12,7 @@ import math
 
 PORT=12345
 app = Celery('pingpong_loadtest', broker=celery_broker_url, backend=celery_backend_url)
-SIZE=22
+SIZE=16
 
 @app.task(bind=True)
 def pong(self: Task):
@@ -43,7 +43,6 @@ def ping(server_id: str) -> int:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ipaddr, 12345))
 
-    times = []
     start = time.time()
     bytes_sent = 2 ** SIZE
     s.sendall(b'a' * bytes_sent)
