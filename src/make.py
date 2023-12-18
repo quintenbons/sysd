@@ -56,6 +56,7 @@ def main():
     argparser.add_argument('makefile', help='Makefile to parse')
     argparser.add_argument('--no-nfs', help='Do not pull artifacts from nfs', action='store_true')
     argparser.add_argument('--perf', help='Measure performance', action='store_true') 
+    argparser.add_argument('--index', help='Index of this node', type=int, default=0)
 
     args = argparser.parse_args()
 
@@ -108,12 +109,10 @@ def main():
     performance.end_time = time.time()
 
     if args.perf:
-        with open('perf.txt', 'w') as f:
+        with open('perf.txt', 'a') as f:
             json.dump(performance.to_json(), f)
             f.write('\n')
-            f.write(f"Env: Nodes: {os.environ['NODES']}, Cores: {os.environ['CORES']}, RAM: {os.environ['RAM']}\n")
-            f.write(f"Makefile: {args.makefile}\n")
-            f.write(f"Tasks: {len(tasks)}\n")
+            f.write(f"Makefile: {args.makefile}, index: ${args.index}\n\n")
 
 if __name__ == "__main__":
     main()
