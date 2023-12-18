@@ -20,4 +20,9 @@ def empty() -> int:
 
 if __name__ == "__main__":
     print("Starting pingpong latency test")
-    server = empty.delay().get()
+    for i in range(1000):
+        time = time.time()
+        server = empty.delay().get()
+        last_time = time.time() - time
+        with open("empty.txt", "w") as f:
+            f.write(f"{last_time}\n")
