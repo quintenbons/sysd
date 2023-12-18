@@ -13,6 +13,7 @@ import math
 PORT=12345
 app = Celery('pingpong_loadtest', broker=celery_broker_url, backend=celery_backend_url)
 SIZE=16
+iteration=1000
 
 @app.task(bind=True)
 def pong(self: Task):
@@ -28,8 +29,11 @@ def pong(self: Task):
     conn, addr = s.accept()
 
     print(f"SERVER - Connected by {addr}. Waiting for pings...")
-    data = conn.recv(2 ** SIZE)
-    conn.send(b'b')
+    while True:
+        data = conn.recv(2 ** SIZE)
+        if len(data) == 0:
+            break
+        conn.send(b'b')
 
     conn.close()
 
@@ -43,18 +47,20 @@ def ping(server_id: str) -> int:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ipaddr, 12345))
 
-    start = time.time()
-    bytes_sent = 2 ** SIZE
-    s.sendall(b'a' * bytes_sent)
-    data = s.recv(1)
-    stop = time.time()
-    latency = stop - start
+    ti = []
+    for i in range(iteration):
+        start = time.time()
+        s.sendall(b'a' * (2 ** SIZE))
+        data = s.recv(1)
+        stop = time.time()
+        latency = stop - start
+        ti.append(latency)
 
     s.close()
 
     assert data == b'b', "Server did not respond correctly"
     print("CLIENT - Server responded correctly")
-    return latency
+    return ti
 
 if __name__ == "__main__":
     server = pong.delay()
