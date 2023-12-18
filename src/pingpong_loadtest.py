@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 import math
 
 PORT=12345
-ITERATIONS=27
-BUNDLE_SIZE=1000
+ITERATIONS=30
+BUNDLE_SIZE=1
 app = Celery('pingpong_loadtest', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task(bind=True)
