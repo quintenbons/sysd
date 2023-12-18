@@ -1,4 +1,4 @@
-export NODES=4
+export NODES=2
 export WALLTIME="2:00:00"
 
 export REPO_PATH=$HOME/sysd
