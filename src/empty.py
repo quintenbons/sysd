@@ -20,4 +20,4 @@ def empty() -> int:
 
 if __name__ == "__main__":
     print("Starting pingpong latency test")
-    server = empty.get()
+    server = empty.delay().get()
