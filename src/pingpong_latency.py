@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import math
 
 PORT=12345
-BUNDLE_SIZE=1000
+BUNDLE_SIZE=10000
 app = Celery('pingpong_latency', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task(bind=True)
