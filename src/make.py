@@ -33,8 +33,10 @@ def main():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('makefile', help='Makefile to parse')
     argparser.add_argument('--no-nfs', help='Do not pull artifacts from nfs', action='store_true')
+    argparser.add_argument('--perf', help='Measure performance', action='store_true') 
 
     args = argparser.parse_args()
+    
     tasks = parsing.parse_makefile(args.makefile)
     task_graph = parsing.generate_task_graph(tasks)
 

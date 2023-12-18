@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 import math
 
 PORT=12345
-ITERATIONS=25
+ITERATIONS=27
 BUNDLE_SIZE=1000
-app = Celery('pingpong', broker=celery_broker_url, backend=celery_backend_url)
+app = Celery('pingpong_loadtest', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task(bind=True)
 def pong(self: Task):
@@ -82,6 +82,4 @@ if __name__ == "__main__":
     with open("pingpong_loadtest.txt", "w") as f:
         for t in times:
             f.write(f"{t}\n")
-    plt.plot([math.log(t, 10) for t in times])
-    plt.show()
-    input("Press enter to exit...")
+        f.write(f"timestable: {time.time()}, test: pingpong_loadtest, size: {BUNDLE_SIZE}, iterations: {ITERATIONS}\n")
