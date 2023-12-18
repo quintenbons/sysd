@@ -13,8 +13,8 @@ class PerformanceMeasurement:
     start_time: int
     parsing_time: int
     scheduling_time: int
-    jobs_running_time: []
-    jobs_done_time: []
+    jobs_running_time = []
+    jobs_done_time = []
     all_jobs_done_time: int
     pulling_time: int
     end_time: int
