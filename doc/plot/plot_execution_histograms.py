@@ -9,7 +9,7 @@ def plot_histograms(csv_file):
     df = df.with_columns((pl.col("all_jobs_done_time") - pl.col("start_time")).alias("total_time"))
 
     fig = px.histogram(df.to_pandas(), x="total_time")
-    fig.update_layout(width=700, title_text="Histograms of CSV Columns")
+    fig.update_layout(width=700, title_text="Execution premier/Makefile-small", xaxis_title="Temps d'exécution (s)")
     fig.show()
 
 if __name__ == "__main__":
