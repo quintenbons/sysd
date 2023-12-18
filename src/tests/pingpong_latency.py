@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import math
 
 PORT=12345
-BUNDLE_SIZE=10000
+BUNDLE_SIZE=1000
 app = Celery('pingpong_latency', broker=celery_broker_url, backend=celery_backend_url)
 
 @app.task(bind=True)
@@ -28,14 +28,11 @@ def pong(self: Task):
     conn, addr = s.accept()
 
     print(f"SERVER - Connected by {addr}. Waiting for pings...")
-    index = 0
     while True:
-        for _ in range(BUNDLE_SIZE):
-            data = conn.recv(2 ** index)
-            if len(data) == 0:
-                break
-            conn.send(b'b')
-        index += 1
+        data = conn.recv(1)
+        if len(data) == 0:
+            break
+        conn.send(b'b')
     conn.close()
 
 @app.task
@@ -53,12 +50,12 @@ def ping(server_id: str) -> int:
     while(index < BUNDLE_SIZE):
         print(f"CLIENT - Sending ping {index+1}/{BUNDLE_SIZE}")
         start = time.time()
+        index += 1
         s.sendall(b'a')
         data = s.recv(1)
         stop = time.time()
         latency = stop - start
         times.append(latency)
-        index += 1 
 
     s.close()
 
@@ -67,6 +64,7 @@ def ping(server_id: str) -> int:
     return times
 
 if __name__ == "__main__":
+    print("Starting pingpong latency test")
     server = pong.delay()
     client = ping.delay(server.id)
     times = client.get()
