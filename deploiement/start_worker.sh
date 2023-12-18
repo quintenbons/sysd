@@ -22,5 +22,5 @@ else
 fi
 mkdir -p $WORK_PATH
 cd $WORK_PATH
-python -m celery -A pingpong_latency worker --concurrency 1 --loglevel=info > $DEPLOY_INFO_PATH/worker-$HOSTNAME.log 2>&1 &
+python -m celery -A empty worker --concurrency 1 --loglevel=info > $DEPLOY_INFO_PATH/worker-$HOSTNAME.log 2>&1 &
 echo "Worker $HOSTNAME ready"
