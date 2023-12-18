@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 import math
 
 PORT=12345
-ITERATIONS=30
-BUNDLE_SIZE=1
 app = Celery('pingpong_loadtest', broker=celery_broker_url, backend=celery_backend_url)
+SIZE=22
 
 @app.task(bind=True)
 def pong(self: Task):
@@ -29,14 +28,8 @@ def pong(self: Task):
     conn, addr = s.accept()
 
     print(f"SERVER - Connected by {addr}. Waiting for pings...")
-    index = 0
-    while True:
-        for _ in range(BUNDLE_SIZE):
-            data = conn.recv(2 ** index)
-            if len(data) == 0:
-                break
-            conn.send(b'b')
-        index += 1
+    data = conn.recv(2 ** SIZE)
+    conn.send(b'b')
 
     conn.close()
 
@@ -50,36 +43,24 @@ def ping(server_id: str) -> int:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ipaddr, 12345))
 
-    index = 0
     times = []
-    load_factor=0
-    while(index < ITERATIONS):
-        print(f"CLIENT - Sending ping {index+1}/{ITERATIONS}")
-        times.append(0)
-        for _ in range(BUNDLE_SIZE):
-            start = time.time()
-            bytes_sent = 2 ** index
-            s.sendall(b'a' * bytes_sent)
-            data = s.recv(1)
-            stop = time.time()
-            latency = stop - start
-            times[-1] += latency
-        times[-1] /= BUNDLE_SIZE
-        index += 1 
+    start = time.time()
+    bytes_sent = 2 ** SIZE
+    s.sendall(b'a' * bytes_sent)
+    data = s.recv(1)
+    stop = time.time()
+    latency = stop - start
 
     s.close()
 
     assert data == b'b', "Server did not respond correctly"
     print("CLIENT - Server responded correctly")
-    return times
+    return latency
 
 if __name__ == "__main__":
     server = pong.delay()
     client = ping.delay(server.id)
-    times = client.get()
+    time = client.get()
 
-    print(f"CLIENT - Received {len(times)} pings")
-    with open("pingpong_loadtest.txt", "w") as f:
-        for t in times:
-            f.write(f"{t}\n")
-        f.write(f"timestable: {time.time()}, test: pingpong_loadtest, size: {BUNDLE_SIZE}, iterations: {ITERATIONS}\n")
+    with open("pingpong_loadtest.txt", "a") as f:
+        f.write(f"{time}\n")
